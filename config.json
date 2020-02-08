@@ -1,0 +1,5 @@
+{
+  "authUser": "email@example.com",
+  "authPass": "JiraAuthenticationToken",
+  "apiHost": "jira-host.example.com"
+}
