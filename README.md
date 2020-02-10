@@ -13,3 +13,18 @@ aliased or used as is -- it's up to you.
 ```
 git log --pretty="format:%s%n%b" previous-production-build..current-production-build | grep --only-matching --extended-regexp '[A-Z]+-[0-9]+' | sort --unique | node path/to/jira-issue-parser.js
 ```
+
+Here's an alias example (in your `.profile` [`.bash_profile`])):
+
+```
+alias jira-issue-parser="node ~/path/to/jira-issue-parser/index.js"
+
+function get-jira-issues() {
+  if [ -n "$1" ] && [ -n "$2" ]
+  then
+    git log --pretty="format:%s%n%b" $1..$2 | grep --only-matching --extended-regexp "[A-Z]+-[0-9]+" | sort --unique | jira-issue-parser
+  else
+    echo "Two arguments needed"
+  fi
+}
+```
