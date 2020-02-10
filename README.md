@@ -28,3 +28,9 @@ function get-jira-issues() {
   fi
 }
 ```
+
+The code above would allow you to use the func as:
+
+```
+get-jira-issues previous-production-build current-production-build
+```
