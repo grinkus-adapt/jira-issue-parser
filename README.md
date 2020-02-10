@@ -20,17 +20,26 @@ Here's an alias example (in your `.profile` [`.bash_profile`])):
 alias jira-issue-parser="node ~/path/to/jira-issue-parser/index.js"
 
 function get-jira-issues() {
-  if [ -n "$1" ] && [ -n "$2" ]
+  if [ -n "$1" ]
   then
-    git log --pretty="format:%s%n%b" $1..$2 | grep --only-matching --extended-regexp "[A-Z]+-[0-9]+" | sort --unique | jira-issue-parser
+    git log --pretty="format:%s%n%b" $1 | grep --only-matching --extended-regexp "[A-Z]+-[0-9]+" | sort --unique | jira-issue-parser
   else
-    echo "Two arguments needed"
+    echo "Arguments compatible with `git-log` needed"
   fi
 }
+```
+
+This would prevent your tab-completion from working; to fix that (in
+`zsh`):
+```
+autoload -Uz compinit
+compinit
+
+compdef _git get-jira-issues=git-log
 ```
 
 The code above would allow you to use the func as:
 
 ```
-get-jira-issues previous-production-build current-production-build
+get-jira-issues previous-production-build..current-production-build
 ```
