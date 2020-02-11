@@ -1,5 +1,5 @@
 const fs = require('fs');
-const https = require("https");
+const https = require('https');
 const allSettled = require('promise.allsettled');
 
 const config = require('./config.json');
@@ -8,10 +8,16 @@ const authHeaders = {
   'Authorization': `Basic ${Buffer.from(`${config.authUser}:${config.authPass}`).toString('base64')}`,
 };
 
+const ENV = process.env.ENV === 'production' ? 'production' : 'staging';
+
 const tasks = {};
 
 let input = '';
 let issues = [];
+
+if (!config.output) {
+  config.output = 'list';
+}
 
 const getTaskInfo = id => {
   return new Promise((resolve, reject) => {
@@ -82,10 +88,18 @@ const printFlatArr = (flatArr) => {
     return acc;
   }, {});
 
-  console.log(printTree(tree));
+  if (config.output === 'list') {
+    console.log(printListTree(tree));
+  } else if (config.output === 'slack-attachments') {
+    console.log(printSlackAttachmentsList(tree));
+  }
 };
 
-const printTask = (task, level = 0) => {
+/**
+ * Print functions, print<Namespace><Func>
+ */
+
+const printListTask = (task, level = 0) => {
   const indent = ' '.repeat(4 * level)
   return (`
 ${indent}-   ${task.id} https://sequencing.atlassian.net/browse/${task.id} (${task.assignee})
@@ -93,12 +107,127 @@ ${indent}    ${task.summary}
 `);
 }
 
-const printTree = (tree, level = 0) => {
+const printListTree = (tree, level = 0) => {
   let output = '';
   Object.keys(tree).forEach(id => {
-    output += printTask(tree[id], level);
+    output += printListTask(tree[id], level);
     if (tree[id].subtasks) {
-      output += printTree(tree[id].subtasks, level + 1);
+      output += printListTree(tree[id].subtasks, level + 1);
+    }
+  });
+  return output;
+};
+
+const getSlackAtMentionString = jiraName => {
+  return ({
+    'Arūnas Paulauskas': 'UJL7US770',
+    'Deividas Guiskis': 'UQ5H8M8BB',
+    'Juozas Mudrikas': 'UAPD67Y3S',
+    'Karolis Grinkus': 'UAW8HK84D',
+    'Linas Balke': 'UAVTZNF29',
+    'Rimantas Matusevicius': 'UAVS6RYMA',
+    'Rytis Eidukaitis': 'UMA081LC9',
+  })[jiraName] || jiraName;
+};
+
+const printSlackAttachmentsTask = (task, parentId) => {
+  return (`{
+  "mrkdwn_in": ["text"],
+  "title": "${task.id}${!!parentId ? ` (child of ${parentId})` : ``}",
+  "title_link": "https://sequencing.atlassian.net/browse/${task.id}",
+  "text": "${task.summary} (<@${getSlackAtMentionString(task.assignee)}>)"
+},
+`);
+};
+
+const getRandomArrayMember = arr => arr[arr.length * Math.random() | 0];
+
+const getGreeting = () => getRandomArrayMember([
+  `Sveiki vyrukai!`,
+  `Vyručiai!`,
+  `Sveiki lūzeriai!`,
+  `Sveikučiukai!`,
+  `Labas niekšeliai!`,
+  `Kylam!`,
+  `Nagi nagi nagi!`,
+  `Ką aš žinau...`,
+  `Tebūnie pasveikintas!`,
+  `Tai prisidirbot?`,
+]);
+
+const getCallToAction = () => {
+  const productionCTAs= [
+    `Eikit testuot kartu su <@UMA081LC9>.`,
+    `Eikit testuot, <@UMA081LC9> irgi.`,
+    `Visi testuojam dabar, ir dev'ai, ir <@UMA081LC9>.`,
+  ];
+  const stagingCTAs = [
+    `Eikit testuot.`,
+    `Pats laikas patestuot.`,
+  ];
+  const stagingOutros = [
+    `Po to paping'inkit Rytį komentare ant task'o, jei viskas OK, kad ir jis patestuotų.`,
+    `Jei viskas OK, paping'inkit Rytį komentare ant task'o, kad ir jis patestuotų.`,
+  ];
+  if (ENV === 'production') {
+    return getRandomArrayMember(productionCTAs);
+  } else {
+    return `${getRandomArrayMember(stagingCTAs)} ${getRandomArrayMember(stagingOutros)}`;
+  }
+};
+
+const getSuccess = () => {
+  const productionSuccesses = [
+    `*Produkcija* sėkmingai pabuild'inta.`,
+    `*Produkcija* pabuild'inta.`,
+    `*Produkcija* suvažiavo.`,
+    `*Produkcijos* build'as done.`,
+    `*Prod'as* sėkmingai suvažiavo.`,
+    `*Prod'as* suvažiavo.`,
+    `*Prod'o* build'as done.`,
+  ];
+  const stagingSuccesses = [
+    `*Staging'o* build'as done.`,
+    `*Staging'o* build'as pavyko.`,
+    `*Staging'o* build'as įvyko.`,
+    `*Staging'as padeploy'intas.`,
+    `*Staging'as* suvažiavo.`,
+    `*Staging'as* sėkmingai suvažiavo.`,
+    `*Staging'as* sėkmingai done.`,
+  ];
+  if (ENV === 'production') {
+    return getRandomArrayMember(productionSuccesses);
+  } else {
+    return getRandomArrayMember(stagingSuccesses);
+  }
+};
+
+const printSlackAttachmentsList = (tree) => {
+  let output = `
+{
+  "username": "Brendona Kolbytė",
+  "text": "<!here> ${getGreeting()} ${getSuccess()} ${getCallToAction()}",
+  "icon_emoji": ":sequencing:",
+  "link_names": true,
+  "unfurl_links": false,
+  "unfurl_media": false,
+  "mrkdwn": true,
+      "attachments": [
+`;
+  output += printSlackAttachmentsTree(tree);
+  output = output.slice(0, -2); // Remove last comma
+output += `
+    ]
+}`;
+  return JSON.stringify(JSON.parse(output), undefined, 2);
+}
+
+const printSlackAttachmentsTree = (tree, parentId) => {
+  let output = ``;
+  Object.keys(tree).forEach(id => {
+    output += printSlackAttachmentsTask(tree[id], parentId);
+    if (tree[id].subtasks) {
+      output += printSlackAttachmentsTree(tree[id].subtasks, id);
     }
   });
   return output;
