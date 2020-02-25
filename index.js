@@ -205,9 +205,7 @@ const getSuccess = () => {
 const printSlackAttachmentsList = (tree) => {
   let output = `
 {
-  "username": "Brendona Kolbytė",
   "text": "${getGreeting()} ${getSuccess()} ${getCallToAction()}",
-  "icon_emoji": ":sequencing:",
   "link_names": true,
   "unfurl_links": false,
   "unfurl_media": false,
