@@ -126,7 +126,7 @@ const getSlackAtMentionString = jiraName => {
     'Karolis Grinkus': 'UAW8HK84D',
     'Linas Balke': 'UAVTZNF29',
     'Rimantas Matusevicius': 'UAVS6RYMA',
-    'Rytis Eidukaitis': 'UMA081LC9',
+    'Sergej Jechropov': 'U013C06L0EM',
   })[jiraName] || jiraName;
 };
 
@@ -157,22 +157,15 @@ const getGreeting = () => getRandomArrayMember([
 
 const getCallToAction = () => {
   const productionCTAs= [
-    `Eikit testuot kartu su <@UMA081LC9>.`,
-    `Eikit testuot, <@UMA081LC9> irgi.`,
-    `Visi testuojam dabar, ir dev'ai, ir <@UMA081LC9>.`,
-  ];
-  const stagingCTAs = [
     `Eikit testuot.`,
-    `Pats laikas patestuot.`,
+    `Pats laikas prasitestuot.`,
+    `Visi testuojam dabar, dev'ai included`,
   ];
-  const stagingOutros = [
-    `Po to paping'inkit Rytį komentare ant task'o, jei viskas OK, kad ir jis patestuotų.`,
-    `Jei viskas OK, paping'inkit Rytį komentare ant task'o, kad ir jis patestuotų.`,
-  ];
+  const stagingCTAs = productionCTAs;
   if (ENV === 'production') {
     return getRandomArrayMember(productionCTAs);
   } else {
-    return `${getRandomArrayMember(stagingCTAs)} ${getRandomArrayMember(stagingOutros)}`;
+    return getRandomArrayMember(stagingCTAs);
   }
 };
 
@@ -190,7 +183,7 @@ const getSuccess = () => {
     `*Staging'o* build'as done.`,
     `*Staging'o* build'as pavyko.`,
     `*Staging'o* build'as įvyko.`,
-    `*Staging'as padeploy'intas.`,
+    `*Staging'as* padeploy'intas.`,
     `*Staging'as* suvažiavo.`,
     `*Staging'as* sėkmingai suvažiavo.`,
     `*Staging'as* sėkmingai done.`,
