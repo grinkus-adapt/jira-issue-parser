@@ -157,11 +157,15 @@ const getGreeting = () => getRandomArrayMember([
 
 const getCallToAction = () => {
   const productionCTAs= [
-    `Eikit testuot.`,
-    `Pats laikas prasitestuot.`,
-    `Visi testuojam dabar, dev'ai included`,
+    `Eikit testuot. Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
+    `Pats laikas prasitestuot. Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
+    `Visi testuojam dabar, dev'ai included. Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
   ];
-  const stagingCTAs = productionCTAs;
+  const stagingCTAs = [
+    `Susistumkit task'us į \`devtest\` ir eikit testuot. Patestavę \`reopen\`inkit (ir praneškit apie tai kanale) arba stumkit į \`ready for prod\`.`,
+    `Pats laikas prasitestuot, iškart dabar savo task'us susistumkit į \`devtest\`. Patestavę \`reopen\`inkit (ir praneškit apie tai kanale) arba stumkit į \`ready for prod\`.`,
+    `Testuojam dabar: stumkit į \`devtest\` ir pradėkit. Patestavę \`reopen\`inkit (ir praneškit apie tai kanale) arba stumkit į \`ready for prod\`.`,
+  ];
   if (ENV === 'production') {
     return getRandomArrayMember(productionCTAs);
   } else {
