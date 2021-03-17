@@ -157,9 +157,9 @@ const getGreeting = () => getRandomArrayMember([
 
 const getCallToAction = () => {
   const productionCTAs= [
-    `Eikit testuot. Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
-    `Pats laikas prasitestuot. Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
-    `Visi testuojam dabar, dev'ai included. Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
+    `Kai AWS'o deploy'us įvyks, tada bus galima testuot (laukit žinutės kanale). Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
+    `Kai tik pasideploy'ins į AWS'ą, tada bus galima testuot (laukit žinutės kanale). Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
+    `AWS'o deploy'ui įvykus, bus galima testuot (laukit žinutės kanale). Patestavę \`reopen\`inkit arba stumkit į \`done\`.`,
   ];
   const stagingCTAs = [
     `Susistumkit task'us į \`devtest\` ir eikit testuot. Patestavę \`reopen\`inkit (ir praneškit apie tai kanale) arba stumkit į \`ready for prod\`.`,
@@ -175,13 +175,10 @@ const getCallToAction = () => {
 
 const getSuccess = () => {
   const productionSuccesses = [
-    `*Produkcija* sėkmingai pabuild'inta.`,
-    `*Produkcija* pabuild'inta.`,
-    `*Produkcija* suvažiavo.`,
-    `*Produkcijos* build'as done.`,
-    `*Prod'as* sėkmingai suvažiavo.`,
-    `*Prod'as* suvažiavo.`,
-    `*Prod'o* build'as done.`,
+    `*Produkcija* sėkmingai pabuild'inta. _Bet *AWS'e dar nėra*._`,
+    `*Produkcija* pabuild'inta. _Bet *ne AWS'e*._`,
+    `*Produkcijos* build'as done. _Reikia laukt *kol bus AWS'e*._`,
+    `*Prod'o* build'as done. _Bet *AWS'e kol kas nėra*._`,
   ];
   const stagingSuccesses = [
     `*Staging'o* build'as done.`,
