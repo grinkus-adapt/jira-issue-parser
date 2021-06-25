@@ -153,6 +153,7 @@ const getGreeting = () => getRandomArrayMember([
   `Ką aš žinau...`,
   `Tebūnie pasveikintas!`,
   `Tai prisidirbot?`,
+  `Sveiki vyriškiai.`,
 ]);
 
 const getCallToAction = () => {
